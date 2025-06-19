@@ -4,15 +4,25 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import Header from './components/Layout/Header';
+import Footer from './components/Layout/Footer';
 
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-    </Routes>
+      <div className="flex flex-col min-h-screen">
+          <Header />
+
+          <main className="flex-grow container mx-auto p-4">
+              <Routes>
+                  <Route path="/" element={<Navigate to="/login" replace />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  {/* TODO: protected routes for profile, upload, search, download */}
+              </Routes>
+          </main>
+          <Footer />
+      </div>
   );
 }
 
