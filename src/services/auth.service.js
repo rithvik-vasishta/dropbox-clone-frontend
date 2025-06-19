@@ -5,7 +5,7 @@ const auth = "/auth"
 
 export const login = (email, password) => {
     console.log("Sending api", apiUrl + auth + "/login");
-    axios.post(apiUrl + auth + "/login", {
+    return axios.post(apiUrl + auth + "/login", {
         email:    email,
         password: password
     });
@@ -13,7 +13,7 @@ export const login = (email, password) => {
 
 export const register = (userName, email, password) => {
     console.log("Sending api", apiUrl + auth + "/register");
-    axios.post(apiUrl + auth + "/register", {
+    return axios.post(apiUrl + auth + "/register", {
         username: userName,
         email:    email,
         password: password

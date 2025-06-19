@@ -1,17 +1,20 @@
 import React, {useState} from "react";
+import { useNavigate } from 'react-router-dom';
 import authService from "../../services/auth.service";
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setLError] = useState(null);
+    const navigate = useNavigate();
 
     const handleSubmit = async e => {
         e.preventDefault();
         try {
-            console.log("Email", email)
-            console.log("Password", password)
-            await authService.login(email, password);
+            const res = await authService.login(email, password);
+            const token = res.data.token;
+            localStorage.setItem('token', token);
+            navigate('/upload');
         } catch (error) {
             setLError(error.response?.data?.errorMessage || "Login Fucked");
         }

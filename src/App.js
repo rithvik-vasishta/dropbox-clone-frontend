@@ -6,6 +6,8 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
+import Upload from "./components/Upload/Upload";
+
 
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
                   <Route path="/" element={<Navigate to="/login" replace />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/upload" element={<Upload />} />
                   {/* TODO: protected routes for profile, upload, search, download */}
               </Routes>
           </main>
