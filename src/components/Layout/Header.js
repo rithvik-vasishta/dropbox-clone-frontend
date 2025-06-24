@@ -1,19 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { removeTokenFromCookie } from '../../services/auth.helper';
 
 export default function Header() {
-    const [menuOpen, setMenuOpen]     = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get('token'));
     const profileRef = useRef(null);
+    const navigate = useNavigate();
+
     useEffect(() => {
-      const handleClickOutside = e => {
+        const handleClickOutside = e => {
             if (profileRef.current && !profileRef.current.contains(e.target)) {
-                  setProfileOpen(false);
-                }
-          };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+                setProfileOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    useEffect(() => {
+        // Listen for token changes across tabs
+        const interval = setInterval(() => {
+            setIsLoggedIn(!!Cookies.get('token'));
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const handleLogout = () => {
+        removeTokenFromCookie();
+        setIsLoggedIn(false);
+        setProfileOpen(false);
+        navigate('/login');
+    };
 
     return (
         <header className="bg-white shadow-md">
@@ -56,12 +76,8 @@ export default function Header() {
                         )}
                     </button>
 
-                    {}
-                    <nav
-                        className={`${
-                            menuOpen ? 'block' : 'hidden'
-                        } md:flex space-y-2 md:space-y-0 md:space-x-4`}
-                    >
+                    {/* Navigation */}
+                    <nav className={`${menuOpen ? 'block' : 'hidden'} md:flex space-y-2 md:space-y-0 md:space-x-4`}>
                         <NavLink
                             to="/"
                             className={({ isActive }) =>
@@ -95,34 +111,45 @@ export default function Header() {
                     </nav>
                 </div>
 
-                {/* Right: Profile icon */}
-                      <div className="relative" ref={profileRef}>
-                        <img
-                          src="/profile-icon.svg"
-                          alt="Profile"
-                          className="h-8 w-8 rounded-full cursor-pointer"
-                          onClick={() => setProfileOpen(open => !open)}
-                        />
-                +
-                        {profileOpen && (
-                          <div className="origin-top-right absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-50">
-                                <NavLink
-                                  to="/login"
-                                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                  onClick={() => setProfileOpen(false)}
+                {/* Right: Profile icon and dropdown */}
+                <div className="relative" ref={profileRef}>
+                    <img
+                        src="/profile-icon.svg"
+                        alt="Profile"
+                        className="h-8 w-8 rounded-full cursor-pointer"
+                        onClick={() => setProfileOpen(open => !open)}
+                    />
+
+                    {profileOpen && (
+                        <div className="origin-top-right absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-50">
+                            {!isLoggedIn ? (
+                                <>
+                                    <NavLink
+                                        to="/login"
+                                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                        onClick={() => setProfileOpen(false)}
+                                    >
+                                        Log In
+                                    </NavLink>
+                                    <NavLink
+                                        to="/register"
+                                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                        onClick={() => setProfileOpen(false)}
+                                    >
+                                        Register
+                                    </NavLink>
+                                </>
+                            ) : (
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                                 >
-                                  Log In
-                                </NavLink>
-                            <NavLink
-                              to="/register"
-                              className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                              onClick={() => setProfileOpen(false)}
-                            >
-                              Register
-                            </NavLink>
-                          </div>
-                        )}
-                      </div>
+                                    Logout
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
         </header>
     );

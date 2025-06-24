@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import { useNavigate } from 'react-router-dom';
 import authService from "../../services/auth.service";
+import { saveTokenToCookie } from "../../services/auth.helper";
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ export default function Login() {
         try {
             const res = await authService.login(email, password);
             const token = res.data.token;
-            localStorage.setItem('token', token);
+            saveTokenToCookie(token);
             navigate('/upload');
         } catch (error) {
             setLError(error.response?.data?.errorMessage || "Login Fucked");

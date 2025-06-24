@@ -2,6 +2,7 @@ import axios from "axios";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const auth = "/auth"
+let cachedToken = null;
 
 export const login = (email, password) => {
     console.log("Sending api", apiUrl + auth + "/login");
@@ -20,6 +21,13 @@ export const register = (userName, email, password) => {
     });
 }
 
-const authService = { login, register }
+export const setToken = (token) => {
+    cachedToken = token;
+}
+
+export const getToken = () => cachedToken;
+
+
+const authService = { login, register, setToken, getToken }
 
 export default authService
